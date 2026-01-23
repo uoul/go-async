@@ -28,7 +28,7 @@ import (
 //	if r.Error != nil {
 //	    log.Printf("error: %v", r.Error)
 //	} else {
-//	    log.Printf("success: %v", r.Value)
+//	    log.Printf("Success: %v", r.Value)
 //	}
 func Do[T any](ctx context.Context, action func(ctx context.Context) (T, error)) Result[T] {
 	r := make(Result[T])
@@ -36,9 +36,9 @@ func Do[T any](ctx context.Context, action func(ctx context.Context) (T, error))
 		defer close(r)
 		result, err := action(ctx)
 		if err != nil {
-			r <- fail[T](err)
+			r <- Fail[T](err)
 		} else {
-			r <- success[T](result)
+			r <- Success[T](result)
 		}
 	}()
 	return r
@@ -84,9 +84,9 @@ func Stream[T any](ctx context.Context, step func(ctx context.Context) (T, error
 		for {
 			result, err, next := step(ctx)
 			if err != nil {
-				r <- fail[T](err)
+				r <- Fail[T](err)
 			} else {
-				r <- success[T](result)
+				r <- Success[T](result)
 			}
 			if !next {
 				break
